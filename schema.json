@@ -1,0 +1,66 @@
+{ "issuer": "GitHub",
+  "desc": "A global platform for developers to contribute to code repositories and collaborate on software projects.",
+  "website": "https://docs.github.com/en/graphql/overview/explorer",
+  "APIs": [
+    {
+      "host": "graphql.github.com",
+      "intercept": {
+        "url": "graphql/proxy",
+        "method": "POST"
+      },
+      "override": {
+        "body": [
+          {
+            "query": "{viewer{login id}}",
+            "verify": true
+          },
+          {
+            "operationName": "@{-}"
+          }
+        ]
+      },
+      "referred": [
+        "data|viewer|login"
+      ],
+      "nullifier": "data|viewer|id"
+    },
+    {
+      "host": "graphql.github.com",
+      "intercept": {
+        "url": "graphql/proxy",
+        "method": "POST"
+      },
+      "override": {
+        "body": [
+          {
+            "query": "{user(login: \"@{=,0|0}\"){login contributionsCollection(to: \"2024-04-20T00:00:00\"){contributionCalendar{totalContributions}}}}"
+          },
+          {
+            "operationName": "@{-}"
+          }
+        ]
+      },
+      "assert": [
+        {
+          "key": "data|user|login",
+          "value": "@{=,0|0}",
+          "operation": "=",
+          "tips": "You must use the same account for logging in."
+        },
+        {
+          "key": "data|user|contributionsCollection|contributionCalendar|totalContributions",
+          "value": "10",
+          "operation": ">=",
+          "tips": "Your contribution count on GitHub must be greater or equal to 10."
+        }
+      ]
+    }
+  ],
+  "HRCondition": [
+    "10+ GitHub contributions within a year up until April 20, 2024"
+  ],
+  "tips": {
+    "message": "To begin, click on \"Sign in with GitHub\" to log in. Once you're logged in, click the 'Start' button to initiate the verification process."
+  },
+  "signature": "341cd8d05ac586041b761d442ab4e6adf7c2155759ce687c25b14b78766e10210ffe9799714433fffb815e626aa5293071b56f592c2c0930ea7fd2dd2569e8ce"
+}
